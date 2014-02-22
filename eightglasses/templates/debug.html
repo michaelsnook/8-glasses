@@ -1,0 +1,90 @@
+{% if not totals %}
+ <p><em> there are no totals </em></p>
+{% endif %}
+{% if not entries %}
+ <p><em> there are no entries </em></p>
+{% endif %}
+
+{% if totals %}
+<table>
+<form action="{{ url_for('remove_goal') }}" method="POST" class="remove-goal-type">
+	<thead>
+		<tr>
+			<th>name</th>
+			<th>type</th>
+			<th>direction</th>
+			<th>period</th>
+			<th>verb</th>
+			<th>subtitle</th>
+			<th>created_at</th>
+			<th>sum</th>
+			<th>count</th>
+			<th>goal</th>
+			<th>most_recent</th>
+			<th><input type="checkbox" checked disabled/></th>
+		</tr>
+	</thead>
+	<tbody>
+	{% for total in totals %}
+		<tr>
+			<td>{{ total.name }}</td>
+			<td>{{ total.type }}</td>
+			<td>{{ total.direction }}</td>
+			<td>{{ total.period }}</td>
+			<td>{{ total.verb }}</td>
+			<td>{{ total.subtitle }}</td>
+			<td>{{ total.created_at }}</td>		
+			<td>{{ total.sum }}</td>
+			<td>{{ total.count }}</td>
+			<td>{{ total.goal }}</td>
+			<td>{{ total.most_recent }}</td>		
+			<td><input type="radio" name="id_name" value="{{ total.goal_id }},{{ total.name }}" />
+		</tr>
+	{% endfor %}
+	</tbody>
+	<input type="checkbox" name="areyousure" value="true" unchecked />
+	<input type="submit" name="delete" value="delete" class="button round secondary olive " />
+</form>
+</table>
+
+{% endif %}
+
+<div class="row">
+{% if entries %}
+<div class="large-5 columns">
+<form action="{{ url_for('remove_entry') }}" method="POST" class="remove-entry">
+<table>
+
+	<thead>
+		<tr>
+			<th>thing</th>
+			<th>number</th>
+			<th>at</th>		
+			<th>notes</th>
+			<th><input type="checkbox" checked disabled/></th>		
+		</tr>
+	</thead>
+	<tbody>
+	{% for entry in entries %}
+		<label for="id-{{ entry.id }}">
+		<!--tr onclick="$(this).find('input').click();"-->
+		<tr>
+			<td>{{ entry.name }}</td>
+			<td>{{ entry.total }}</td>
+			<td>{{ entry.created_at }}</td>	
+			<td>{{ entry.notes|safe }}</td>		
+			<td><input type="checkbox" id="id-{{ entry.id }}" name="id-{{ entry.id }}" value="{{ entry.id }}" /></td>
+		</tr></label>
+		
+	{% endfor %}
+	</tbody>
+	<input type="checkbox" name="areyousure" value="true" unchecked />
+	<input type="submit" name="delete" value="delete" class="button round secondary olive " />
+</table>
+</form>
+{% endif %}
+
+</div>
+  	<div class="large-6 columns">  
+  {% include 'addgoal_form.html' %}
+		</div>

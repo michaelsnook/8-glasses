@@ -1,0 +1,62 @@
+<form action="{{ url_for('add_goal') }}" method="POST" class="add-goal-type">
+  <fieldset>
+   	<legend>Add a goal</legend>	
+	 	<div class="row">
+			<div class="large-4 columns">
+			  <label>verb
+				  <input type="text" placeholder="drink" name="verb" />        
+				</label>
+    	</div>
+			<div class="large-4 columns">
+			  <label>more / less
+      		<select name="direction">
+      			<option value="positive">at least</option>
+            <option value="negative">at most</option>
+          </select>
+			  </label>
+    	</div>
+			<div class="large-3 columns">
+			  <label>how many
+  				<input type="text" placeholder="8" name="goal" />        
+			  </label>
+			</div>
+	 	</div>
+	 	<div class="row">
+			<div class="large-4 columns">
+			  <label>goal name
+  				<input type="text" placeholder="glasses" name="name" />
+			  </label>
+			</div>
+			<div class="large-4 columns">
+  		  <label>subtitle
+					<input type="text" placeholder="of water" name="subtitle" />
+  		  </label>
+			</div>
+			<div class="large-3 columns">
+			  <label>time period
+          <select name="period">
+	        	<option value="daily">daily</option>
+            <option value="weekly">weekly</option>
+          </select>
+			  </label>    
+			</div>
+	 	</div>
+	 	<div class="row">
+			<div class="large-4 columns">
+			  <label>total type
+  				<select name="type">
+						<option value="increment">increment +1</option>
+            <option value="count">count +__</option>
+            <option value="float">float +__._</option>
+          </select>
+			  </label>
+			</div>
+			<div class="large-3 columns">
+			  <label>&nbsp;
+  				<button class="button right round expand">add</button>
+			  </label>
+			</div>
+	 	</div>
+
+	</fieldset>
+</form>

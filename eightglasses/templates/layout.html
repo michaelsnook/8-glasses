@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+<head>
+  <title>eight glasses</title>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='normalize.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='foundation.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='colors.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">  
+  
+  <script src="{{ url_for('static', filename='modernizr.js') }}"></script>
+</head>
+<body>
+  <div class="row waytop">
+    <div class="large-11 columns">      
+      <div class="panel">
+      	{% if not session.logged_in %}
+				  <a href="{{ url_for('login') }}" class="button right round">log in</a>
+				{% else %}
+				  <a href="{{ url_for('logout') }}" class="button right round">log out</a>
+				  <span class="space"></span>
+					<a href="#" data-reveal-id="addgoal-modal" class="button secondary right round olive" data-reveal>add goal</a>
+
+				{% endif %}
+        <h1>Eight Glasses</h1>
+      </div>
+    </div>
+  </div>
+
+<div class="row">
+	<div class="large-11 columns">
+  {% for message in get_flashed_messages() %}
+    <div data-alert class="alert-box">
+    	{{ message }}
+	    <a href="#" class="close">&times;</a>
+    </div>
+  {% endfor %}
+  {% block body %}{% endblock %}
+	</div>
+</div>
+
+
+
+	<footer class="row waybottom">
+    <div class="large-11 columns">
+    <div class="panel radius">
+
+      <div class="row">
+        <div class="large-5 columns">
+          <p>Footer section. Enjoy!</p>
+        </div>
+        <div class="large-7 columns">
+          <ul class="inline-list right">
+            <li><a href="#" onclick="$('#debug').toggle(300)">Debug</a></li>
+            <li><a href="#">Section 2</a></li>
+            <li><a href="#">Section 3</a></li>
+            <li><a href="#">Section 4</a></li>
+            <li><a href="#">Section 5</a></li>
+            <li><a href="#">Section 6</a></li>
+          </ul>
+        </div>
+      </div>
+			<hr />
+			<div class="debug" style="display: hidden;">
+    		{% block debug %}{% endblock %}
+			</div>
+
+    </div>
+    </div>
+  </footer>
+
+
+
+	<script src="{{ url_for('static', filename='jquery.js') }}"></script>
+	<script src="{{ url_for('static', filename='foundation.js') }}"></script>
+	<script src="{{ url_for('static', filename='foundation.reveal.js') }}"></script>
+	<script src="{{ url_for('static', filename='d3.js') }}"></script>
+{#	<script src="{{ url_for('static', filename='slip.js') }}"></script> #}
+	<script src="{{ url_for('static', filename='app.js') }}"></script>
+	<script> $(document).foundation();</script>
+</body>

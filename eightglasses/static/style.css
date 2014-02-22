@@ -1,0 +1,8 @@
+qbutton h1, button h6, .panel button h1, .panel button h6, .button h1, .button h6, .panel .button h1, .panel .button h6 { color: white; }
+.panel .row .large-4 button { width: 100%; }
+.waytop { margin-top: -5px; }
+div.row.waybottom { margin-bottom: 0; }
+.marginless { margin: 0; }
+.button.secondary.olive, button.secondary.olive { background-color: transparent; color: #3d9970; margin-right: 20px; }
+.button.secondary.olive:hover, button:hover.secondary.olive { background-color: #3d9970; color: white; }
+/*input { text-align: center; }*/
