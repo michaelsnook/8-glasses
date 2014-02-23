@@ -1,6 +1,41 @@
 {% extends "layout.html" %}
 {% block body %}
 
-{% include 'debug.html' %}
+{% if not entries %}
+ <p><em> there are no entries </em></p>
+{% endif %}
 
+<div class="row">
+{% if entries %}
+<div class="large-11 columns">
+<table>
+
+	<thead>
+		<tr>
+			<th width="200">thing</th>
+			<th width="200">number</th>
+			<th width="200">at</th>		
+			<th width="200">notes</th>
+		</tr>
+	</thead>
+	<tbody>
+	{% for entry in entries %}
+		<tr>
+			<td>{{ entry.name }}</td>
+			<td>{{ entry.total }}</td>
+			<td>{{ entry.created_at }}</td>	
+			<td>{{ entry.notes|safe }}</td>		
+		</tr></label>
+		
+	{% endfor %}
+	</tbody>
+</table>
+{% endif %}
+
+</div>
+
+
+{% endblock %}
+
+{% block debug %}
 {% endblock %}
