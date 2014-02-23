@@ -1,1 +1,1 @@
-web: python eightglasses/eightglasses.py -p 5000
+web: gunicorn eightglasses/eightglasses:app -p 5000
