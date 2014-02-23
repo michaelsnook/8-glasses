@@ -1,1 +1,1 @@
-web: python eightglasses.py
+web: python eightglasses/eightglasses.py
