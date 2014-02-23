@@ -12,16 +12,28 @@
 <body>
   <div class="row waytop">
     <div class="large-11 columns">      
-      <div class="panel">
-      	{% if not session.logged_in %}
-				  <a href="{{ url_for('login') }}" class="button right round">log in</a>
-				{% else %}
-				  <a href="{{ url_for('logout') }}" class="button right round">log out</a>
-				  <span class="space"></span>
-					<a href="#" data-reveal-id="addgoal-modal" class="button secondary right round olive" data-reveal>add goal</a>
+      <div class="panel radius">
+        <div class="row">
+          <div class="large-4 columns">
+            <a href="{{ url_for('home') }}">
+              <h1>Eight Glasses</h1>
+              <p class="aside">The habit forming app</p>
+            </a>
+          </div>
 
+          <div class="large-7 columns">
+      	{% if not session.logged_in %}
+            <!--p class="aside">&nbsp;</p-->
+  				  <a href="{{ url_for('login') }}" class="button right round">log in</a>
+				{% else %}
+            <!--p class="aside">&nbsp;</p-->
+	  			  <a href="{{ url_for('logout') }}" class="button right round secondary olive">log out</a>
+            <span class="space">&nbsp;</span>
+            <a href="#" data-reveal-id="addgoal-modal" class="button secondary right round olive" data-reveal>add goal</a>
+            <a href="{{ url_for('numbers') }}" class="button secondary right round olive" data-reveal>numbers</a>
 				{% endif %}
-        <h1>Eight Glasses</h1>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -45,21 +57,19 @@
     <div class="panel radius">
 
       <div class="row">
-        <div class="large-5 columns">
-          <p>Footer section. Enjoy!</p>
-        </div>
-        <div class="large-7 columns">
+        <div class="large-6 columns">
           <ul class="inline-list right">
             <li><a href="#" onclick="$('#debug').toggle(300)">Debug</a></li>
-            <li><a href="#">Section 2</a></li>
-            <li><a href="#">Section 3</a></li>
-            <li><a href="#">Section 4</a></li>
-            <li><a href="#">Section 5</a></li>
-            <li><a href="#">Section 6</a></li>
+            <li><a href="https://github.com/michaelsnook/8-glasses/">GitHub</a></li>
+
           </ul>
         </div>
+        <div class="large-4 columns">
+          <p>&copy; Michael Snook 2014</p>
+        </div>
+
       </div>
-			<hr />
+
 			<div class="debug" style="display: hidden;">
     		{% block debug %}{% endblock %}
 			</div>

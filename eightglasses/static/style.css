@@ -1,8 +1,24 @@
 qbutton h1, button h6, .panel button h1, .panel button h6, .button h1, .button h6, .panel .button h1, .panel .button h6 { color: white; }
 .panel .row .large-4 button { width: 100%; }
 .waytop { margin-top: -5px; }
-div.row.waybottom { margin-bottom: 0; }
+.waytop a.button { margin-top: 12px; }
+footer.row.waybottom { margin-bottom: 0; margin-top: 40px; }
+footer.row.waybottom div.panel { 
+  margin-bottom: 0; 
+  border-bottom-left-radius: 0; 
+  border-bottom-right-radius: 0; 
+  border-bottom-width: 0px;
+}
 .marginless { margin: 0; }
-.button.secondary.olive, button.secondary.olive { background-color: transparent; color: #3d9970; margin-right: 20px; }
-.button.secondary.olive:hover, button:hover.secondary.olive { background-color: #3d9970; color: white; }
+.button.secondary.olive, button.secondary.olive { 
+  background-color: transparent; 
+  color: #3d9970; 
+  margin-right: 20px; 
+  border: 1px solid transparent; 
+}
+.button.secondary.olive:hover, button:hover.secondary.olive { border: 1px solid #3d9970; }
+p.aside { margin-bottom: 0; }
+.app-preview { margin: 0 30px 30px 30px; width: 340px; height: 260px; }
+.tablet-frame { width: 100%; height: auto; }
+.tablet-preview { width: 440px; padding: 32px; position: relative; top: -280px; z-index: -1;}
 /*input { text-align: center; }*/

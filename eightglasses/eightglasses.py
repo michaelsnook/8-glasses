@@ -1,8 +1,6 @@
 import os,sqlite3,string
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
 
-
-
 app = Flask(__name__)
 app.config.from_object(__name__)
 
@@ -59,6 +57,8 @@ def messages():
 
 @app.route('/')
 def home():
+    if not session.get('logged_in'):
+      return render_template('index.html')
     db = get_db()
     cur = db.execute('select id, name, total, type, datetime(created_at, "localtime") `created_at`, notes from entries order by id desc')
     entries = cur.fetchall()
@@ -100,6 +100,16 @@ def admin():
     totals = cur.fetchall()
 
     return render_template('admin.html', entries=entries, totals=totals, )
+
+@app.route('/numbers')
+def numbers():
+    if not session.get('logged_in'):
+        abort(401)
+    db = get_db()
+    cur = db.execute('select id, name, total, type, created_at, notes from entries order by id desc')
+    entries = cur.fetchall()
+    return render_template('numbers.html', entries=entries, )
+
 
 @app.route('/addentry', methods=['POST'])
 def add_entry():
