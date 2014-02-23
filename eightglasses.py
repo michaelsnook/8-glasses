@@ -27,7 +27,7 @@ def get_db():
     if not hasattr(g, 'sqlite_db'):
         g.sqlite_db = connect_db()
     db = g.sqlite_db
-    with app.open_resource('schema_make.sql', mode='r') as f:
+    with app.open_resource('scripts/schema_make.sql', mode='r') as f:
       db.cursor().executescript(f.read())
     db.commit() 
     return db
@@ -41,7 +41,7 @@ def close_db(error):
 def init_db():
     with app.app_context():
         db = get_db()
-        with app.open_resource('schema.sql', mode='r') as f:
+        with app.open_resource('scripts/schema.sql', mode='r') as f:
             db.cursor().executescript(f.read())
         db.commit()
 
@@ -49,7 +49,7 @@ def init_db():
 def clear_entries():
     with app.app_context():
         db = get_db()
-        with app.open_resource('clear.sql', mode='r') as f:
+        with app.open_resource('scripts/clear.sql', mode='r') as f:
             db.cursor().executescript(f.read())
         db.commit() 
 

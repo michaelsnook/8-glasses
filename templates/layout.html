@@ -2,13 +2,13 @@
 <html>
 <head>
   <title>eight glasses</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='normalize.css') }}" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='foundation.css') }}" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='dataTables.foundation.css') }}" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='colors.css') }}" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />  
+  <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/normalize.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/foundation.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/dataTables.foundation.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/colors.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/style.css') }}" />  
   
-  <script src="{{ url_for('static', filename='modernizr.js') }}"></script>
+  <script src="{{ url_for('static', filename='javascripts/modernizr.js') }}"></script>
 </head>
 <body>
   <div class="row waytop">
@@ -85,14 +85,13 @@
     </div>
   </footer>
 
-	<script src="{{ url_for('static', filename='jquery.js') }}"></script>
-	<script src="{{ url_for('static', filename='foundation.js') }}"></script>
-	<script src="{{ url_for('static', filename='foundation.reveal.js') }}"></script>
-	<script src="{{ url_for('static', filename='jquery.dataTables.min.js') }}"></script>
-	<script src="{{ url_for('static', filename='dataTables.foundation.js') }}"></script>
-{#	<script src="{{ url_for('static', filename='d3.js') }}"></script>
-	<script src="{{ url_for('static', filename='slip.js') }}"></script> #}
-	<script src="{{ url_for('static', filename='app.js') }}"></script>
+	<script src="{{ url_for('static', filename='javascripts/jquery.js') }}"></script>
+	<script src="{{ url_for('static', filename='javascripts/foundation.js') }}"></script>
+	<script src="{{ url_for('static', filename='javascripts/foundation.reveal.js') }}"></script>
+	<script src="{{ url_for('static', filename='javascripts/jquery.dataTables.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='javascripts/dataTables.foundation.js') }}"></script>
+{#	<script src="{{ url_for('static', filename='javascripts/d3.js') }}"></script> #}
+	<script src="{{ url_for('static', filename='javascripts/app.js') }}"></script>
 	<script> 
 	  $(document).foundation(); 
     $('table').dataTable({
