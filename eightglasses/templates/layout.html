@@ -93,5 +93,10 @@
 {#	<script src="{{ url_for('static', filename='d3.js') }}"></script>
 	<script src="{{ url_for('static', filename='slip.js') }}"></script> #}
 	<script src="{{ url_for('static', filename='app.js') }}"></script>
-	<script> $(document).foundation(); $('table').dataTable();</script>
+	<script> 
+	  $(document).foundation(); 
+    $('table').dataTable({
+        "sDom": "<'row'<'large-5 small5 columns'l><'large-6 small-6 columns'f>r>t<'row'<'large-6 small-6 columns'i><'span6'p>>"
+    } );
+	</script>
 </body>
