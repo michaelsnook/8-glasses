@@ -26,7 +26,11 @@ def get_db():
     """
     if not hasattr(g, 'sqlite_db'):
         g.sqlite_db = connect_db()
-    return g.sqlite_db
+    db = g.sqlite_db
+    with app.open_resource('schema_make.sql', mode='r') as f:
+      db.cursor().executescript(f.read())
+    db.commit() 
+    return db
 
 @app.teardown_appcontext
 def close_db(error):
