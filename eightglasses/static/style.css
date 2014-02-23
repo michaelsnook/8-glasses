@@ -21,4 +21,5 @@ p.aside { margin-bottom: 0; }
 .app-preview { margin: 0 30px 30px 30px; width: 340px; height: 260px; }
 .tablet-frame { width: 100%; height: auto; }
 .tablet-preview { width: 440px; padding: 32px; position: relative; top: -280px; z-index: -1;}
-/*input { text-align: center; }*/
+a:hover, button:hover, input:hover[type=submit] { text-decoration: underline; }
+a:hover.brand, a:hover.button.marginless, button:hover.marginless { text-decoration: none; }
