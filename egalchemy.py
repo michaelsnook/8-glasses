@@ -45,7 +45,7 @@ class Goal(db.Model):
   verb = db.Column(db.String(20), nullable=True)
   subtitle = db.Column(db.String(40), nullable=True)
 
-  def __init__(self, name, goal, type, direction, period, verb, subtitle):
+  def __init__(self, name, goal, type='increment', direction='positive', period='daily', verb=None, subtitle=None):
     self.created_at = datetime.utcnow()
     self.name = name
     self.goal = goal
@@ -68,9 +68,10 @@ class Entry(db.Model):
   total = db.Column(db.Float, default=1)
   notes = db.Column(db.String(120), nullable=True)
 
-  def __init__(self, name, total, text):
+  def __init__(self, name, goal_id, total=1, notes=None):
     self.created_at = datetime.utcnow()
     self.name = name
+    self.goal_id = goal_id
     self.total = total
     self.notes = notes
   def __repr__(self):
@@ -147,9 +148,11 @@ def add_entry():
   if not session.get('logged_in'):
     abort(401)
   form = request.form
-
-  db.execute('insert into entries (name, total, notes) values (?, ?, ?)',
-               [form['name'], form['total'], form['notes']])
+  
+  entry = Entry(form['name'], form['goal_id'], form['total'], form['notes'])
+  db.add(entry)
+#  db.execute('insert into entries (name, total, notes) values (?, ?, ?)',
+#               [form['name'], form['total'], form['notes']])
   db.commit()
   app.logger.debug(db.total_changes)
   if db.total_changes:
@@ -169,7 +172,9 @@ def remove_entry():
       if f[:2] == 'id':
         s = s + f[3:] + ','
     s = s[:-1]
-    db.execute('DELETE FROM entries WHERE id in(' + s + ')')
+    # i don't know if this will work
+    db.query(Entry).filter(Entry.id.in_(s.split(',')))
+    # db.execute('DELETE FROM entries WHERE id in(' + s + ')')
     db.commit()
     flash('Successfully deleted those pesky entries')
     return redirect(url_for('home'))
@@ -182,8 +187,13 @@ def add_goal():
   if not session.get('logged_in'):
     abort(401)
   form = request.form
-  db.execute('insert into goals (name, goal, type, direction, period, verb, subtitle) values (?, ?, ?, ?, ?, ?, ?)',
-               [form['name'], form['goal'], form['type'], form['direction'], form['period'], form['verb'], request.form['subtitle']])
+    
+  goal = Goal(form['name'], form['goal'], form['type'], form['direction'], form['period'], form['verb'], form['subtitle'])
+  
+#  db.execute('insert into goals (name, goal, type, direction, period, verb, subtitle) values (?, ?, ?, ?, ?, ?, ?)',
+#               [form['name'], form['goal'], form['type'], form['direction'], form['period'], form['verb'], request.form['subtitle']])
+
+  db.add(goal)
   db.commit()
   flash('Your new goal was successfully added!')
   return redirect(url_for('home'))   
@@ -195,9 +205,10 @@ def remove_goal():
   form = request.form
   if form['delete'] == 'delete' and form['areyousure']:
     s = form['id_name'].split(',')
-    db.execute('DELETE FROM goals WHERE id = ? AND name = ?', [s[0], s[1]])
-    db.commit()
-    db.execute('DELETE FROM entries where name = ?', [s[1]])
+    
+    target = db.query(Goal).filter( id == s[0] , name == s[1] ).first()
+    db.delete(target)
+    #db.execute('DELETE FROM entries where name = ?', [s[1]])
     db.commit()
     flash('Your goal was successfully deleted :(')
     return redirect(url_for('home'))
