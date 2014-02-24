@@ -1,7 +1,8 @@
 {% extends "layout.html" %}
 {% block body %}
 	
-	{% for goaltotal in goaltotals | sort(attribute='max_entry_id', reverse=True) %}	
+	{# for goaltotal in goaltotals | sort(attribute='max_entry_id', reverse=True) #}	
+	{% for goaltotal in goaltotals %}	
 	<div id="slippable" class="row">
   	<div class="large-11 columns">
     	<!-- Feed Entry -->
@@ -11,13 +12,13 @@
 	        	<div class="large-3 small-3 columns text-center">
 							<input type="hidden" name="name" value="{{ goaltotal.name }}" />
 							<input type="hidden" name="type" value="{{ goaltotal.type }}"	/>
-							
+							<input type="hidden" name="goal_id" value="{{ goaltotal.id }}"	/>							
 							{% if goaltotal.type == 'increment' %}
 							<input type="hidden" name="notes" value=""	/>
 							<input type="hidden" name="total" value="1"	/>
 							<button class="round large expand marginless 
 								{% if goaltotal.direction == 'negative' %}alert{% endif %}">
-        				<h1>{{ goaltotal.sum|int }}</h1>
+        				<h1>0{# goaltotal.sum|int #}</h1>
 							</button>
 							
 							{% else %}							
@@ -37,8 +38,8 @@
 								class="round large button expand marginless 
 								{% if goaltotal.direction == 'negative' %}alert{% endif %}">
         				<h1>
-	        				{%- if goaltotal.type == 'increment' or goaltotal.type == 'count' %}{{ goaltotal.sum|int }}
-									{%- else %} {{ goaltotal.sum }}
+	        				{%- if goaltotal.type == 'increment' or goaltotal.type == 'count' %}{# goaltotal.sum|int #}0
+									{%- else %} {# goaltotal.sum #}
 									{%- endif %}
 								</h1>
 							</a>
@@ -52,10 +53,10 @@
 						    {%- else %}{% endif %}
 						  </span>
 						  <h1>
-							  {% if goaltotal.type == 'increment' or goaltotal.type == 'count' %}{{ goaltotal.goal|int }}
-							  {%- else %} {{ goaltotal.goal }}
+							  {% if goaltotal.type == 'increment' or goaltotal.type == 'count' %}{# goaltotal.sum|int #}0
+							  {%- else %} {# goaltotal.goal #}
 							  {%- endif %}	  
-							  {{ goaltotal.name }}
+							  {# goaltotal.name #}
 						  </h1>
 						  <span class="clearfix">
 							   {{- goaltotal.subtitle }}
@@ -103,7 +104,7 @@
 		</div><!-- columns -->
 	</div>
  	{%- endfor %}
-	
+
 {% endblock %}
 
 

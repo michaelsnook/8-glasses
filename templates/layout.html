@@ -83,6 +83,13 @@
     </div>
   </footer>
 
+{%- if session.logged_in %}
+<div id="addgoal-modal" class="reveal-modal medium" data-reveal>
+{% include 'addgoal_form.html' %}
+</div>
+{% endif %}
+
+
 	<script src="{{ url_for('static', filename='javascripts/jquery.js') }}"></script>
 	<script src="{{ url_for('static', filename='javascripts/foundation.js') }}"></script>
 	<script src="{{ url_for('static', filename='javascripts/foundation.reveal.js') }}"></script>

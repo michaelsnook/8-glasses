@@ -1,9 +1,6 @@
 from datetime import datetime 
 import os, string
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
-#from sqlalchemy import create_engine
-#from sqlalchemy.orm import scoped_session, sessionmaker
-#from sqlalchemy.ext.declarative import declarative_base
 from flask.ext.sqlalchemy import SQLAlchemy
 
 
@@ -23,13 +20,6 @@ app.config.from_envvar('EIGHTGLASSES_SETTINGS', silent=True)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///egalchemy.db'
 db = SQLAlchemy(app)
 
-#engine = create_engine('sqlite:////tmp/test.db', convert_unicode=True)
-#db_session = scoped_session(sessionmaker(autocommit=False,
-#                                         autoflush=False,
-#                                         bind=engine))
-#Base = declarative_base()
-#Base.query = db_session.query_property()
-
 
 class User(db.Model):
   __tablename__ = 'users'
@@ -40,6 +30,7 @@ class User(db.Model):
   def __init__(self, username, email):
     self.username = username
     self.email = email
+
   def __repr__(self):
     return '<User %r>' % self.username
 
@@ -56,7 +47,8 @@ class Goal(db.Model):
   verb = db.Column(db.String(20), nullable=True)
   subtitle = db.Column(db.String(40), nullable=True)
 
-  def __init__(self, name, goal, type='increment', direction='positive', period='daily', verb=None, subtitle=None):
+  def __init__(self, name, goal, type='increment', direction='positive', 
+                            period='daily', verb=None, subtitle=None):
     self.created_at = datetime.utcnow()
     self.name = name
     self.goal = goal
@@ -65,6 +57,7 @@ class Goal(db.Model):
     self.period = period
     self.verb = verb
     self.subtitle = subtitle
+
   def __repr__(self):
     return '<Goal %r>' % self.name
 
@@ -85,6 +78,7 @@ class Entry(db.Model):
     self.goal_id = goal_id
     self.total = total
     self.notes = notes
+
   def __repr__(self):
     return '<Name %r>' % self.name
 
@@ -93,33 +87,12 @@ class Entry(db.Model):
 def home():
   if not session.get('logged_in'):
     return render_template('index.html')
-  entries = Entry.query.filter().all()
-  
-  """ I'm structuring these queries to share the same "start" and "end" strings, so that it's 
-      extra super clear what exactly is varying from one to the next.
-      
-      It's set up to enforce the same exact SELECT structure so the lists can be appended together
-      arbitrarily, but the app mostly relies on the combination of the daily and weekly queries
-      which never select the same rows as one another and together select the entire set.
-      
-      @@TODO: upgrade to SQLAlchemy (?)
-      
-      """
-  querystart = 'select max(entries.id) `max_entry_id`, datetime(max(entries.created_at), "localtime") `most_recent`, goals.id `goal_id`, goals.name, goals.type, goals.direction, goals.period, goals.verb, goals.subtitle, sum(coalesce(entries.total, 0)) `sum`, count(distinct entries.id) `count`, goals.goal,  datetime(goals.created_at, "localtime") `created_at` from goals left join entries on '
-  queryend = 'group by goals.name'
-  
-  cur_day = db.from_statement(querystart + '(entries.name=goals.name and date(entries.created_at, "localtime") = date("now", "localtime")) where goals.period="daily" ' + queryend)
-  dailytotals = cur_day.fetchall()
-
-  cur_week = db.from_statement(querystart + '(entries.name=goals.name and date(entries.created_at, "localtime", "weekday 1", "-7 days") = date("now", "localtime", "weekday 1", "-7 days")) where goals.period="weekly" ' + queryend)
-  weeklytotals = cur_week.fetchall()
-
-  cur = db.from_statement(querystart + '(entries.name=goals.name) ' + queryend + ', goals.type order by goals.created_at asc')
-  totals = cur.fetchall()
-  
+  entries = Entry.query.all()
+  dailytotals = Goal.query.filter( Goal.period == 'daily' ).all()
+  weeklytotals = Goal.query.filter( Goal.period == 'weekly' ).all()  
   goaltotals = dailytotals + weeklytotals
   
-  return render_template('home.html', entries=entries, goaltotals=goaltotals, totals=totals)
+  return render_template('alhome.html', entries=entries, goaltotals=goaltotals, )
     
 @app.route('/admin')
 def admin():
@@ -134,23 +107,20 @@ def admin():
   if not session.get('logged_in'):
       abort(401)
 
-  entries = Entry.query.filter().all()
-
-  """ This one returns all-time totals for every goal. """
-#  cur = db.session.from_statement('select goals.id `goal_id`, goals.name, goals.type, goals.direction, goals.period, goals.verb, goals.subtitle, sum(coalesce(entries.total, 0)) `sum`, count(distinct entries.id) `count`, goals.goal, max(entries.created_at) `most_recent`, goals.created_at from goals left join entries on (entries.name=goals.name) group by goals.name, goals.type order by goals.created_at asc')
-#  totals = cur.fetchall()
-
-# this is really not supposed to be happening #
-# it's just to avoid an error before rendering the template #
-  totals = entries 
+  entries = Entry.query.order_by(Entry.id).all()
+  goals = Goal.query.order_by(Goal.id).all()
  
-  return render_template('admin.html', entries=entries, totals=totals, )
+  return render_template('aladmin.html', entries=entries, goals=goals, )
 
 @app.route('/numbers')
 def numbers():
+  """ 
+  "  This is where I'll be working on improvement-over-time charts and visualizations.
+  """
+
   if not session.get('logged_in'):
     abort(401)
-  entries = Entry.query.filter().all()
+  entries = Entry.query.all()
   return render_template('numbers.html', entries=entries, )
 
 
@@ -162,11 +132,10 @@ def add_entry():
   
   entry = Entry(form['name'], form['goal_id'], form['total'], form['notes'])
   db.session.add(entry)
-#  db.execute('insert into entries (name, total, notes) values (?, ?, ?)',
-#               [form['name'], form['total'], form['notes']])
   db.session.commit()
-  app.logger.debug(db.total_changes)
-  if db.total_changes:
+#  app.logger.debug(db.total_changes)
+  if True:
+#  if db.total_changes:
     flash('New entry was successfully posted')
   else:
     flash('Entry not added')
@@ -184,9 +153,10 @@ def remove_entry():
         s = s + f[3:] + ','
     s = s[:-1]
     # i don't know if this will work
-    target = Entry.query.filter(Entry.id.in_(s.split(',')))
-    db.session.delete(target)
-    # db.execute('DELETE FROM entries WHERE id in(' + s + ')')
+    app.logger.debug(s)
+    entrytarget = Entry.query.filter( Entry.id.in_((s)) ).all()
+    for t in entrytarget:
+      db.session.delete(t)
     db.session.commit()
     flash('Successfully deleted those pesky entries')
     return redirect(url_for('home'))
@@ -200,11 +170,8 @@ def add_goal():
     abort(401)
   form = request.form
     
-  goal = Goal(form['name'], form['goal'], form['type'], form['direction'], form['period'], form['verb'], form['subtitle'])
-  
-#  db.execute('insert into goals (name, goal, type, direction, period, verb, subtitle) values (?, ?, ?, ?, ?, ?, ?)',
-#               [form['name'], form['goal'], form['type'], form['direction'], form['period'], form['verb'], request.form['subtitle']])
-
+  goal = Goal(form['name'], form['goal'], form['type'], 
+    form['direction'], form['period'], form['verb'], form['subtitle'])
   db.session.add(goal)
   db.session.commit()
   flash('Your new goal was successfully added!')
@@ -218,9 +185,9 @@ def remove_goal():
   if form['delete'] == 'delete' and form['areyousure']:
     s = form['id_name'].split(',')
     
-    target = Goal.query.filter( id == s[0] , name == s[1] ).first()
+    target = Goal.query.filter( Goal.id == s[0] , Goal.name == s[1] ).first()
+    """ @@TODO: set up cascading deletes to get the entries too """
     db.session.delete(target)
-    #db.execute('DELETE FROM entries where name = ?', [s[1]])
     db.session.commit()
     flash('Your goal was successfully deleted :(')
     return redirect(url_for('home'))
@@ -230,10 +197,8 @@ def remove_goal():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-  """ 
-   "  successful login drops you onto the home page. 
-   "  @@TODO: add support for ?next= 
-  """
+  """ successful login drops you onto the home page.  """
+  """ @@TODO: add support for ?next=                  """
   error = None
   if request.method == 'POST':
     if request.form['username'] != app.config['USERNAME']:
