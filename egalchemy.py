@@ -112,14 +112,14 @@ def home():
     
 @app.route('/admin')
 def admin():
-""" 
- "  Provides an easy interface for viewing all entries and deleting entries if needed. 
- "  It's not a substitute for a real admin, and I notice that flask does have an Admin 
- "  tool I could check out. But I'm not sure if users really need a full admin, and I'd
- "  kind of rather go through the work of building it myself to know that I'm doing 
- "  things in a way that will still feel good on a phone.
-"""
-
+  """ 
+  "  Provides an easy interface for viewing all entries and deleting entries if needed. 
+  "  It's not a substitute for a real admin, and I notice that flask does have an Admin 
+  "  tool I could check out. But I'm not sure if users really need a full admin, and I'd
+  "  kind of rather go through the work of building it myself to know that I'm doing 
+  "  things in a way that will still feel good on a phone.
+  """
+  
   if not session.get('logged_in'):
       abort(401)
  
