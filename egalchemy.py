@@ -1,63 +1,77 @@
+from datetime import datetime 
 import os, string
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
 from flask.ext.sqlalchemy import SQLAlchemy
-from datetime import datetime 
+
 
 app = Flask(__name__)
 app.config.from_object(__name__)
 
-#load default config
+# Load default config
 app.config.update(dict(
-  DATABASE=os.path.join(app.root_path, 'eightglasses.db'),
+  DATABASE=os.path.join(app.root_path, 'egalchemy.db'),
   DEBUG=True,
   SECRET_KEY='development key',
   USERNAME='admin',
   PASSWORD='default'
 ))
+# I don't know how this part works
 app.config.from_envvar('EIGHTGLASSES_SETTINGS', silent=True)
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///flaskr.db'
-
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///egalchemy.db'
 db = SQLAlchemy(app)
 
-#def connect_db():
-#    """Connects to the specific database."""
-#    rv = sqlite3.connect(app.config['DATABASE'])
-#    rv.row_factory = sqlite3.Row
-#    return rv
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True)
+    email = db.Column(db.String(120), unique=True)
+    
+    def __init__(self, username, email):
+        self.username = username
+        self.email = email
+    def __repr__(self):
+        return '<User %r>' % self.username
 
-#def get_db():
-#    """Opens a new database connection if there is none yet for the
-#    current application context.
-#    """
-#    if not hasattr(g, 'sqlite_db'):
-#        g.sqlite_db = connect_db()
-#    db = g.sqlite_db
-#    with app.open_resource('scripts/schema_make.sql', mode='r') as f:
-#      db.cursor().executescript(f.read())
-#    db.commit() 
-#    return db
+class Goal(db.Model):
+  id = db.Column(db.Integer, primary_key=True)
+  created_at = db.Column(db.DateTime)
+  user_id = db.Column(db.Integer, db.ForeignKey("user.id")) 
+  name = db.Column(db.String(20), nullable=True)
+  goal = db.Column(db.Float, nullable=False)
+  type = db.Column(db.String(20), default='increment')
+  direction = db.Column(db.String(20), default='positive')
+  period = db.Column(db.String(20), default='daily')
+  verb = db.Column(db.String(20), nullable=True)
+  subtitle = db.Column(db.String(40), nullable=True)
 
-# @app.teardown_appcontext
-# def close_db(error):
-#    """Closes the database again at the end of the request."""
-#    if hasattr(g, 'sqlite_db'):
-#        g.sqlite_db.close()
+  def __init__(self, name, goal, type, direction, period, verb, subtitle):
+    self.created_at = datetime.utcnow()
+    self.name = name
+    self.goal = goal
+    self.type = type
+    self.direction = direction
+    self.period = period
+    self.very = very
+    self.subtitle = subtitle
+  def __repr__(self):
+    return '<Goal %r>' % self.name
 
-#def init_db():
-#    with app.app_context():
-#        db = get_db()
-#        with app.open_resource('scripts/schema.sql', mode='r') as f:
-#            db.cursor().executescript(f.read())
-#        db.commit()
 
-""" @@TODO: this function is really not supposed to still be here """
-def clear_entries():
-    with app.app_context():
-#        db = get_db()
-        with app.open_resource('scripts/clear.sql', mode='r') as f:
-            db.cursor().executescript(f.read())
-        db.commit() 
+class Entry(db.Model):
+  id = db.Column(db.Integer, primary_key=True)
+  created_at = db.Column(db.DateTime)
+  user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+  goal_id = db.Column(db.Integer, db.ForeignKey("goal.id"))
+  name = db.Column(db.String(20), nullable=False)
+  total = db.Column(db.Float, default=1)
+  notes = db.Column(db.String(120), nullable=True)
+
+  def __init__(self, name, total, text):
+    self.created_at = datetime.utcnow()
+    self.name = name
+    self.total = total
+    self.notes = notes
+  def __repr__(self):
+    return '<Name %r>' % self.name
 
 
 @app.route('/')
@@ -165,8 +179,6 @@ def remove_entry():
       flash('Something went wrong with the form and your goal was not removed')
       return redirect(url_for('home'))
 
-
-
 @app.route('/addgoal', methods=['POST'])
 def add_goal():
     if not session.get('logged_in'):
@@ -177,8 +189,7 @@ def add_goal():
                  [form['name'], form['goal'], form['type'], form['direction'], form['period'], form['verb'], request.form['subtitle']])
     db.commit()
     flash('Your new goal was successfully added!')
-    return redirect(url_for('home'))
-    
+    return redirect(url_for('home'))   
     
 @app.route('/removegoal', methods=['POST'])
 def remove_goal():
@@ -198,21 +209,23 @@ def remove_goal():
       flash('Something went wrong with the form and your goal was not removed')
       return redirect(url_for('home'))
 
-
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    error = None
-    if request.method == 'POST':
-        if request.form['username'] != app.config['USERNAME']:
-            error = 'Invalid username'
-        elif request.form['password'] != app.config['PASSWORD']:
-            error = 'Invalid password'
-        else:
-            session['logged_in'] = True
-            flash('You were logged in')
-            return redirect(url_for('home'))
-    return render_template('login.html', error=error)
+  """ 
+   "  successful login drops you onto the home page. 
+   "  @@TODO: add support for ?next= 
+  """
+  error = None
+  if request.method == 'POST':
+      if request.form['username'] != app.config['USERNAME']:
+          error = 'Invalid username'
+      elif request.form['password'] != app.config['PASSWORD']:
+          error = 'Invalid password'
+      else:
+          session['logged_in'] = True
+          flash('You were logged in')
+          return redirect(url_for('home'))
+  return render_template('login.html', error=error)
 
 @app.route('/logout')
 def logout():
