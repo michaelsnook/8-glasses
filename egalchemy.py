@@ -21,6 +21,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///egalchemy.db'
 db = SQLAlchemy(app)
 
 class User(db.Model):
+    __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True)
     email = db.Column(db.String(120), unique=True)
@@ -32,9 +33,10 @@ class User(db.Model):
         return '<User %r>' % self.username
 
 class Goal(db.Model):
+  __tablename__ = 'goals'
   id = db.Column(db.Integer, primary_key=True)
   created_at = db.Column(db.DateTime)
-  user_id = db.Column(db.Integer, db.ForeignKey("user.id")) 
+  user_id = db.Column(db.Integer, db.ForeignKey('users.id')) 
   name = db.Column(db.String(20), nullable=True)
   goal = db.Column(db.Float, nullable=False)
   type = db.Column(db.String(20), default='increment')
@@ -57,10 +59,11 @@ class Goal(db.Model):
 
 
 class Entry(db.Model):
+  __tablename__ = 'entries'
   id = db.Column(db.Integer, primary_key=True)
   created_at = db.Column(db.DateTime)
-  user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-  goal_id = db.Column(db.Integer, db.ForeignKey("goal.id"))
+  user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+  goal_id = db.Column(db.Integer, db.ForeignKey('goals.id'))
   name = db.Column(db.String(20), nullable=False)
   total = db.Column(db.Float, default=1)
   notes = db.Column(db.String(120), nullable=True)
