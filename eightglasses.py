@@ -95,11 +95,23 @@ def home():
     
 @app.route('/admin')
 def admin():
+    """ Provides an easy interface for viewing all entries and deleting entries if needed. 
+        It's not a substitute for a real admin, and I notice that flask does have an Admin 
+        tool I could check out. But I'm not sure if users really need a full admin, and I'd
+        kind of rather go through the work of building it myself to know that I'm doing 
+        things in a way that will still feel good on a phone.
+    
+     """
+
     if not session.get('logged_in'):
         abort(401)
     db = get_db()
+    
+    """ This one just returns every entry. """
     cur = db.execute('select id, name, total, type, created_at, notes from entries order by id desc')
     entries = cur.fetchall()
+
+    """ This one returns all-time totals for every goal. """
     cur = db.execute('select goals.id `goal_id`, goals.name, goals.type, goals.direction, goals.period, goals.verb, goals.subtitle, sum(coalesce(entries.total, 0)) `sum`, count(distinct entries.id) `count`, goals.goal, max(entries.created_at) `most_recent`, goals.created_at from goals left join entries on (entries.name=goals.name) group by goals.name, goals.type order by goals.created_at asc')
     totals = cur.fetchall()
 
