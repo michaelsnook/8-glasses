@@ -9,15 +9,14 @@ app.config.from_object(__name__)
 
 # Load default config
 app.config.update(dict(
-  DATABASE=os.path.join(app.root_path, 'egalchemy.db'),
   DEBUG=True,
   SECRET_KEY='development key',
   USERNAME='admin',
   PASSWORD='default'
 ))
-# I don't know how this part works
 app.config.from_envvar('EIGHTGLASSES_SETTINGS', silent=True)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///egalchemy.db'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/egalchemy'
 db = SQLAlchemy(app)
 
 
