@@ -56,7 +56,7 @@
 							  {% if goaltotal.type == 'increment' or goaltotal.type == 'count' %}{# goaltotal.sum|int #}0
 							  {%- else %} {# goaltotal.goal #}
 							  {%- endif %}	  
-							  {# goaltotal.name #}
+							  {{ goaltotal.name }}
 						  </h1>
 						  <span class="clearfix">
 							   {{- goaltotal.subtitle }}

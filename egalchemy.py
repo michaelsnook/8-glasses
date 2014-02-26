@@ -16,7 +16,7 @@ app.config.update(dict(
 ))
 app.config.from_envvar('EIGHTGLASSES_SETTINGS', silent=True)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/egalchemy'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/eightglasses'
 db = SQLAlchemy(app)
 
 
@@ -79,7 +79,7 @@ class Entry(db.Model):
     self.notes = notes
 
   def __repr__(self):
-    return '<Name %r>' % self.name
+    return '<Entry %r>' % self.name
 
 
 @app.route('/')
@@ -89,9 +89,9 @@ def home():
   entries = Entry.query.all()
   dailytotals = Goal.query.filter( Goal.period == 'daily' ).all()
   weeklytotals = Goal.query.filter( Goal.period == 'weekly' ).all()  
-  goaltotals = dailytotals + weeklytotals
+  goals = dailytotals + weeklytotals
   
-  return render_template('alhome.html', entries=entries, goaltotals=goaltotals, )
+  return render_template('alhome.html', entries=entries, goaltotals=goals, )
     
 @app.route('/admin')
 def admin():
@@ -184,7 +184,7 @@ def remove_goal():
   if form['delete'] == 'delete' and form['areyousure']:
     s = form['id_name'].split(',')
     
-    target = Goal.query.filter( Goal.id == s[0] , Goal.name == s[1] ).first()
+    target = Goal.query.filter( Goal.id == s[0] , Goal.name == s[1] ).first_or_404()
     """ @@TODO: set up cascading deletes to get the entries too """
     db.session.delete(target)
     db.session.commit()
