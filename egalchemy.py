@@ -21,6 +21,8 @@ db = SQLAlchemy(app)
 
 
 class User(db.Model):
+  """ The User model... not currently in use """
+  
   __tablename__ = 'users'
   id = db.Column(db.Integer, primary_key=True)
   username = db.Column(db.String(80), unique=True)
@@ -34,16 +36,31 @@ class User(db.Model):
     return '<User %r>' % self.username
 
 class Goal(db.Model):
+
+  """ Users typically have a handful of goals each. Each goal has a numeric 
+  success measure and a time interval which are used to give feedback to the
+  user on whether they are meeting their goals. """
+  
   __tablename__ = 'goals'
   id = db.Column(db.Integer, primary_key=True)
   created_at = db.Column(db.DateTime)
   user_id = db.Column(db.Integer, db.ForeignKey('users.id')) 
   name = db.Column(db.String(20), nullable=True)
   goal = db.Column(db.Float, nullable=False)
+
+  # increment, count, or float. 
   type = db.Column(db.String(20), default='increment')
+
+  # options are positive or negative, meaning things you want to do less of
   direction = db.Column(db.String(20), default='positive')
+  
+  # right now only daily and weekly goals are supported
   period = db.Column(db.String(20), default='daily')
+  
+  # optional. just for fun. DRINK eight glasses. DO sixty situps.
   verb = db.Column(db.String(20), nullable=True)
+  
+  # meh
   subtitle = db.Column(db.String(40), nullable=True)
 
   def __init__(self, name, goal, type='increment', direction='positive', 
@@ -175,9 +192,12 @@ def add_goal():
   db.session.commit()
   flash('Your new goal was successfully added!')
   return redirect(url_for('admin'))   
+
     
 @app.route('/removegoal', methods=['POST'])
 def remove_goal():
+  """ Provides a way to remove or delete goals """
+  
   if not session.get('logged_in'):
     abort(401)
   form = request.form
