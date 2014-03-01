@@ -1,0 +1,133 @@
+<!doctype html>
+<html>
+<head>
+  <title>eight glasses</title>
+  <link rel="stylesheet" href="/static/stylesheets/normalize.css" />
+  <link rel="stylesheet" href="/static/stylesheets/foundation.css" />
+  <link rel="stylesheet" href="/static/stylesheets/colors.css" />
+  <link rel="stylesheet" href="/static/stylesheets/style.css" />  
+  
+  <script src="/static/javascripts/modernizr.js"></script>
+</head>
+<body>
+  <div class="row waytop">
+    <div class="large-11 columns">      
+      <div class="panel radius">
+        <div class="row">
+          <div class="large-4 small-6 columns">
+            <a class="brand" href="/">
+              <h1>Eight Glasses</h1>
+              <p class="aside">The habit forming app</p>
+            </a>
+          </div>
+
+          <div class="large-7 small-5 columns">
+      	
+  				  <a data-reveal-id="login-modal" href="#"  class="button right round">log in</a>
+  				  
+  				  <div id="login-modal" class="reveal-modal medium" data-reveal>
+                <h2>Log in</h2>
+  </p>
+  <form action="/login" method="POST">
+    <label>Username:
+    <input type=text name="username" /></label>
+    <label>Password:
+    <input type="password" name="password" /></label>
+    <input type="submit" class="button round bg-olive" value="submit">
+  </form>
+            </div>
+  				  
+  				  
+				
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<div class="row">
+	<div class="large-11 columns">
+  
+  
+	
+	<div class="row">
+  	<div class="large-11 columns">
+      <!--h3>(Unless you want to sign up for an account)</h3-->
+      <h2>Eight Glasses is an app to help you take control of your habits...</h2>
+      <div class="right app-preview">
+        <img class="tablet-frame" src="/static/images/tablet-frame.png" alt="example phone" />
+        <img class="tablet-preview" src="/static/images/eight-glasses.png" alt="example phone" />
+      </div>
+      <p>Setting goals and forming habits shouldn't be a chore, so I'm making this app to help me track my life metrics, one click at a time, and review my progress as I go.</p>
+
+      <p>Set daily or weekly goals for anything you want. Track incrementals, reps, or floats. Encourage yourself with positive goals, or keep your vices in check with "no more than" types.</p>
+      
+      <p>Eight Glasses is free and open source. You can't actually create your own account (yet), but you can get the code from <a href="https://github.com/michaelsnook/8-glasses/">the GitHub repository</a> and set it up on your own computer, if you're into that sort of thing.</p>
+		</div><!-- columns -->
+	</div>
+
+	<div class="row">
+  	<div class="large-11 columns">
+      <h2>... and a hobby project to help me learn python for the web.</h2>
+      <p>I started with the tutorial for <a href="http://flask.pocoo.org/">Flask</a>, an open source micro-framework for Python. The html, css, and modals rely on <a href="http://foundation.zurb.com/">Foundation</a>, (which uses <a href="http://necolas.github.io/normalize.css/">normalize.css</a> and <a href="http://modernizr.com/">modernizr.js</a>), and colors from <a href="http://clrs.cc">clrs.cc</a>. There's still a lot left to do:</p>
+      <div class="row"><div class="large-5 columns">
+        <ul>
+          <li>Summary tables showing how you've been doing during past days/weeks (or else you can only see your progress for <em>today</em> or <em>this week</em>).</li>
+          <li>Visualize multiple progress metrics, like the area graph in <a href="http://bl.ocks.org/mbostock/1256572">this d3 example</a>.</li>
+          <li>Figure out how to put it on the public web (probably through Heroku).</li>
+          <li>Switch off SQLite to PostgreSQL and SQLAlchemy to abstract database operations.</li>
+        </ul>
+      </div>
+      <div class="large-5 columns">
+        <ul>
+          <li>Add support and authentication for multiple user accounts.</li>
+          <li>Add fun / configurable messages of encouragement for when you do good things.</li>
+          <li>Perhaps enable sharing on social media when you surpass a positive goal.</li>
+          <li>I might make each section into a subtle progress bar. That could be neat.</li>
+        </ul>
+      </div></div>
+      <p>But I've never done any of those things before, so who knows if I'll be successful or how long that will take. In the meantime, I'd love your feedback and ideas, either on <a href="https://github.com/michaelsnook/8-glasses/issues">the project's Issues page</a>, or via email to michael dot snook at gmail dot com.</p>
+		</div><!-- columns -->
+	</div>
+
+
+	</div>
+</div>
+
+
+
+	<footer class="row waybottom">
+    <div class="large-11 columns">
+    <div class="panel radius">
+
+      <div class="row">
+        <div class="large-6 small-6 columns">
+          <ul class="inline-list right">
+            <li><a href="https://github.com/michaelsnook/8-glasses/">View on GitHub</a></li>
+            <li><a href="/login">Login</a></li>
+          </ul>
+        </div>
+        <div class="large-4 small-4 columns">
+          <p>&copy; Michael Snook 2014</p>
+        </div>
+
+      </div>
+
+			<div class="debug" style="display: hidden;">
+    		
+<div id="debug" style="display:none;">
+
+</div>
+
+			</div>
+
+    </div>
+    </div>
+  </footer>
+
+	<script src="/static/javascripts/jquery.js"></script>
+	<script src="/static/javascripts/foundation.js"></script>
+	<script src="/static/javascripts/foundation.reveal.js"></script>
+	<script src="/static/javascripts/app.js"></script>
+
+</body>
