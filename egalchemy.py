@@ -98,20 +98,6 @@ class Entry(db.Model):
   def __repr__(self):
     return '<Entry %r>' % self.name
 
-
-""""
-@app.route('/')
-def home():
-  if not session.get('logged_in'):
-    return render_template('index.html')
-  entries = Entry.query.all()
-  dailytotals = Goal.query.filter( Goal.period == 'daily' ).all()
-  weeklytotals = Goal.query.filter( Goal.period == 'weekly' ).all()  
-  goals = dailytotals + weeklytotals
-  
-  return render_template('alhome.html', entries=entries, goaltotals=goals, )
-"""
-
 @app.route('/')
 def home():
     if not session.get('logged_in'):
