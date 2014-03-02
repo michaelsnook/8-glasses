@@ -82,13 +82,13 @@ class Entry(db.Model):
   __tablename__ = 'entries'
   id = db.Column(db.Integer, primary_key=True)
   created_at = db.Column(db.DateTime)
-  user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+  user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
   goal_id = db.Column(db.Integer, db.ForeignKey('goals.id'))
   name = db.Column(db.String(20), nullable=False)
   total = db.Column(db.Float, default=1)
   notes = db.Column(db.String(120), nullable=True)
 
-  def __init__(self, name, goal_id, total=1, notes=None):
+  def __init__(self, name, goal_id, total, notes=None):
     self.created_at = datetime.utcnow()
     self.name = name
     self.goal_id = goal_id
@@ -99,6 +99,7 @@ class Entry(db.Model):
     return '<Entry %r>' % self.name
 
 
+""""
 @app.route('/')
 def home():
   if not session.get('logged_in'):
@@ -109,6 +110,43 @@ def home():
   goals = dailytotals + weeklytotals
   
   return render_template('alhome.html', entries=entries, goaltotals=goals, )
+"""
+
+@app.route('/')
+def home():
+    if not session.get('logged_in'):
+      return render_template('index.html')
+    #db = get_db()
+    cur = db.engine.execute('select id, name, total, created_at, notes from entries order by id desc')
+    entries = cur.fetchall()
+    
+    daily_text = db.text(
+      "select max(entries.id) as max_entry_id, max(entries.created_at) as most_recent, "
+      "goals.id as goal_id, goals.name, goals.type, goals.direction, goals.period, goals.verb, "
+      "goals.subtitle, sum(coalesce(entries.total, 0)) as sum, count(distinct entries.id) as count, "
+      "goals.goal, goals.created_at from goals left join entries on (entries.name=goals.name and "
+      "date(entries.created_at) = date(CURRENT_TIMESTAMP)) where goals.period = 'daily' "
+      "group by goals.name, goals.id"
+    )
+    cur_day = db.engine.execute(daily_text)
+    dailytotals = cur_day#.fetch_all()
+    """"
+    weekly_text = db.text("select max(entries.id) as max_entry_id, "
+      "max(entries.created_at) as most_recent, goals.id as goal_id, "
+      "goals.name, goals.type, goals.direction, goals.period, goals.verb, goals.subtitle, "
+      "sum(coalesce(entries.total, 0)) as sum, count(distinct entries.id) as count, goals.goal, "
+      "goals.created_at from goals left join entries "
+      "on (entries.name=goals.name and date(entries.created_at, 'weekday 1', '-7 days') = "
+      "date(CURRENT_TIMESTAMP, 'weekday 1', '-7 days')) where goals.period='weekly' "
+      "group by goals.name, goals.id"
+    )
+    cur_week = db.engine.execute(weekly_text)
+    weeklytotals = cur_week#.fetch_all()
+    """
+
+    goaltotals = dailytotals #+ weeklytotals
+    return render_template('alhome.html', goaltotals=goaltotals)
+
     
 @app.route('/admin')
 def admin():
@@ -150,11 +188,11 @@ def add_entry():
   db.session.add(entry)
   db.session.commit()
 #  app.logger.debug(db.total_changes)
-  if True:
+#  if True:
 #  if db.total_changes:
-    flash('New entry was successfully posted')
-  else:
-    flash('Entry not added')
+  flash('New entry was successfully posted')
+#  else:
+#    flash('Entry not added')
   return redirect(url_for('home'))
 
 @app.route('/removeentry', methods=['POST'])
