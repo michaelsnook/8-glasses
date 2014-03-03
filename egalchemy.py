@@ -43,8 +43,14 @@ class Goal(db.Model):
   
   __tablename__ = 'goals'
   id = db.Column(db.Integer, primary_key=True)
+  
+  # set automatically
   created_at = db.Column(db.DateTime)
-  user_id = db.Column(db.Integer, db.ForeignKey('users.id')) 
+
+  # not currently in use
+  user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True) 
+
+  # the most important text field!
   name = db.Column(db.String(20), nullable=True)
 
   # how many?
