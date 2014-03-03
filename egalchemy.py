@@ -89,11 +89,24 @@ class Goal(db.Model):
 class Entry(db.Model):
   __tablename__ = 'entries'
   id = db.Column(db.Integer, primary_key=True)
+
+  # set automatically
   created_at = db.Column(db.DateTime)
+  
+  # not in use
   user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+  
+  # the foreign key 
   goal_id = db.Column(db.Integer, db.ForeignKey('goals.id'))
+  #@@TODO add a backref
+  
+  # the main text label
   name = db.Column(db.String(20), nullable=False)
+
+  # how many of the thing are we logging with this action?
   total = db.Column(db.Float, default=1)
+  
+  # unused
   notes = db.Column(db.String(120), nullable=True)
 
   def __init__(self, name, goal_id, total, notes=None):
