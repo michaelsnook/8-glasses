@@ -20,8 +20,8 @@
 			<th>verb</th>
 			<th>subtitle</th>
 			<th>created_at</th>
-			<th>sum</th>
-			<th>count</th>
+			{#<th>sum</th>
+			<th>count</th>#}
 			<th>goal</th>
 			<th>most_recent</th>
 			<th><input type="checkbox" checked disabled/></th>
@@ -37,8 +37,17 @@
 			<td>{{ goal.verb }}</td>
 			<td>{{ goal.subtitle }}</td>
 			<td>{{ goal.created_at }}</td>		
-			<td>{# goal.sum #}</td>
-			<td>{{ goal.count }}</td>
+
+    {#- 
+      @@TODO: would this work? 
+			<td>{{ goal.entry.sum(Entry.total) }}</td>
+    #}
+      
+    {#-
+      @@TODO: make backref so this works
+			<td>{{ goal.entry.count() }}</td>
+		#}
+		
 			<td>{{ goal.goal }}</td>
 			<td>{{ goal.most_recent }}</td>		
 			<td><input type="radio" name="id_name" value="{{ goal.id }},{{ goal.name }}" />
