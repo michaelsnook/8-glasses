@@ -102,35 +102,27 @@ class Entry(db.Model):
 def home():
     if not session.get('logged_in'):
       return render_template('index.html')
-    #db = get_db()
-    cur = db.engine.execute('select id, name, total, created_at, notes from entries order by id desc')
-    entries = cur.fetchall()
     
-    daily_text = db.text(
+    both_text = db.text(
       "select max(entries.id) as max_entry_id, max(entries.created_at) as most_recent, "
       "goals.id as goal_id, goals.name, goals.type, goals.direction, goals.period, goals.verb, "
       "goals.subtitle, sum(coalesce(entries.total, 0)) as sum, count(distinct entries.id) as count, "
       "goals.goal, goals.created_at from goals left join entries on (entries.name=goals.name and "
       "date(entries.created_at) = date(CURRENT_TIMESTAMP)) where goals.period = 'daily' "
+      "group by goals.name, goals.id "
+      "UNION "
+      "select max(entries.id) as max_entry_id, max(entries.created_at) as most_recent, "
+      "goals.id as goal_id, goals.name, goals.type, goals.direction, goals.period, goals.verb, "
+      "goals.subtitle, sum(coalesce(entries.total, 0)) as sum, count(distinct entries.id) as count, "
+      "goals.goal, goals.created_at from goals left join entries on (entries.name=goals.name and "
+      "date(entries.created_at) = date(CURRENT_TIMESTAMP)) where goals.period='weekly' "
       "group by goals.name, goals.id"
+    
     )
-    cur_day = db.engine.execute(daily_text)
-    dailytotals = cur_day#.fetch_all()
-    """"
-    weekly_text = db.text("select max(entries.id) as max_entry_id, "
-      "max(entries.created_at) as most_recent, goals.id as goal_id, "
-      "goals.name, goals.type, goals.direction, goals.period, goals.verb, goals.subtitle, "
-      "sum(coalesce(entries.total, 0)) as sum, count(distinct entries.id) as count, goals.goal, "
-      "goals.created_at from goals left join entries "
-      "on (entries.name=goals.name and date(entries.created_at, 'weekday 1', '-7 days') = "
-      "date(CURRENT_TIMESTAMP, 'weekday 1', '-7 days')) where goals.period='weekly' "
-      "group by goals.name, goals.id"
-    )
-    cur_week = db.engine.execute(weekly_text)
-    weeklytotals = cur_week#.fetch_all()
-    """
+    
 
-    goaltotals = dailytotals #+ weeklytotals
+    #goaltotals = dailytotals + weeklytotals
+    goaltotals = db.engine.execute(both_text)
     return render_template('alhome.html', goaltotals=goaltotals)
 
     
@@ -188,10 +180,11 @@ def remove_entry():
   form = request.form
   if form['delete'] == 'delete' and form['areyousure']:
     s = ''
+    app.logger.debug(form)
     for f in form:
       if f[:2] == 'id':
-        s = s + f[3:] + ','
-    s = s[:-1]
+        s = s + form[f] + ','
+    #s = s[:-1]
     # i don't know if this will work
     app.logger.debug(s)
     entrytarget = Entry.query.filter( Entry.id.in_((s)) ).all()
@@ -202,7 +195,7 @@ def remove_entry():
     return redirect(url_for('home'))
   else:
     flash('Something went wrong with the form and your goal was not removed')
-    return redirect(url_for('home'))
+    return redirect(url_for('admin'))
 
 @app.route('/addgoal', methods=['POST'])
 def add_goal():
@@ -233,10 +226,10 @@ def remove_goal():
     db.session.delete(target)
     db.session.commit()
     flash('Your goal was successfully deleted :(')
-    return redirect(url_for('home'))
+    return redirect(url_for('admin'))
   else:
     flash('Something went wrong with the form and your goal was not removed')
-    return redirect(url_for('home'))
+    return redirect(url_for('admin'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

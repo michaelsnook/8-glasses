@@ -38,7 +38,7 @@
 								class="round large button expand marginless 
 								{% if goaltotal.direction == 'negative' %}alert{% endif %}">
         				<h1>
-	        				{%- if goaltotal.type == 'increment' or goaltotal.type == 'count' %}{# goaltotal.sum|int #}
+	        				{%- if goaltotal.type == 'increment' or goaltotal.type == 'count' %}{{ goaltotal.sum|int }}
 									{%- else %} {{ goaltotal.sum }}
 									{%- endif %}
 								</h1>
@@ -53,7 +53,7 @@
 						    {%- else %}{% endif %}
 						  </span>
 						  <h1>
-							  {% if goaltotal.type == 'increment' or goaltotal.type == 'count' %}{{ goaltotal.sum|int }}
+							  {% if goaltotal.type == 'increment' or goaltotal.type == 'count' %}{{ goaltotal.goal|int }}
 							  {%- else %} {{ goaltotal.goal }}
 							  {%- endif %}	  
 							  {{ goaltotal.name }}
