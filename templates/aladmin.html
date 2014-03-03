@@ -23,7 +23,7 @@
 			{#<th>sum</th>
 			<th>count</th>#}
 			<th>goal</th>
-			<th>most_recent</th>
+			{# <th>most_recent</th> #}
 			<th><input type="checkbox" checked disabled/></th>
 		</tr>
 	</thead>
@@ -40,16 +40,19 @@
 
     {#- 
       @@TODO: would this work? 
-			<td>{{ goal.entry.sum(Entry.total) }}</td>
+			<td>{{ goal.entries.sum(Entry.total) }}</td>
     #}
       
     {#-
       @@TODO: make backref so this works
-			<td>{{ goal.entry.count() }}</td>
+			<td>{{ goal.entries.count() }}</td>
 		#}
 		
 			<td>{{ goal.goal }}</td>
-			<td>{{ goal.most_recent }}</td>		
+		{#	
+		  @@TODO: would this work?	
+			<td>{{ goal.entries.max(Entry.created_at) }}</td>	
+		#}	
 			<td><input type="radio" name="id_name" value="{{ goal.id }},{{ goal.name }}" />
 		</tr>
 	{% endfor %}
@@ -70,8 +73,8 @@
 		<tr>
 			<th>thing</th>
 			<th>number</th>
-			<th>at</th>		
-			<th>notes</th>
+			<th>created_at</th>		
+			{#<th>notes</th>#}
 			<th><input type="checkbox" checked disabled/></th>		
 		</tr>
 	</thead>
@@ -83,7 +86,7 @@
 			<td>{{ entry.name }}</td>
 			<td>{{ entry.total }}</td>
 			<td>{{ entry.created_at }}</td>	
-			<td>{{ entry.notes|safe }}</td>		
+			{#<td>{{ entry.notes|safe }}</td>#}
 			<td><input type="checkbox" id="id-{{ entry.id }}" name="id-{{ entry.id }}" value="{{ entry.id }}" /></td>
 		</tr></label>
 		
