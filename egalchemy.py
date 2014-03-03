@@ -128,6 +128,14 @@ def home():
       "goals.id as goal_id, goals.name, goals.type, goals.direction, goals.period, goals.verb, "
       "goals.subtitle, sum(coalesce(entries.total, 0)) as sum, count(distinct entries.id) as count, "
       "goals.goal, goals.created_at from goals left join entries on (entries.name=goals.name) "
+      "where goals.type='daily' "
+      "group by goals.name, goals.id "    
+      "UNION "
+      "select max(entries.id) as max_entry_id, max(entries.created_at) as most_recent, "
+      "goals.id as goal_id, goals.name, goals.type, goals.direction, goals.period, goals.verb, "
+      "goals.subtitle, sum(coalesce(entries.total, 0)) as sum, count(distinct entries.id) as count, "
+      "goals.goal, goals.created_at from goals left join entries on (entries.name=goals.name) "
+      "where goals.type='weekly' "
       "group by goals.name, goals.id "    
     )    
     goaltotals = db.engine.execute(both_text)
