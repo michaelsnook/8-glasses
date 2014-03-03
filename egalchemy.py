@@ -203,7 +203,7 @@ def remove_entry():
     for f in form:
       if f[:2] == 'id':
         s = s + form[f] + ','
-    #s = s[:-1]
+    s = s[:-1]
     # i don't know if this will work
     app.logger.debug(s)
     entrytarget = Entry.query.filter( Entry.id.in_((s)) ).all()
@@ -211,7 +211,7 @@ def remove_entry():
       db.session.delete(t)
     db.session.commit()
     flash('Successfully deleted those pesky entries')
-    return redirect(url_for('home'))
+    return redirect(url_for('admin'))
   else:
     flash('Something went wrong with the form and your goal was not removed')
     return redirect(url_for('admin'))
