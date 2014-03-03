@@ -45,10 +45,10 @@ class Goal(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   
   # set automatically
-  created_at = db.Column(db.DateTime)
+  created_at = db.Column(db.DateTime, default="current_timestamp")
 
   # not currently in use
-  user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True) 
+  #user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True) 
 
   # the most important text field!
   name = db.Column(db.String(20), nullable=True)
@@ -91,10 +91,10 @@ class Entry(db.Model):
   id = db.Column(db.Integer, primary_key=True)
 
   # set automatically
-  created_at = db.Column(db.DateTime)
+  created_at = db.Column(db.DateTime, default="current_timestamp")
   
   # not in use
-  user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+  #user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
   
   # the foreign key 
   goal_id = db.Column(db.Integer, db.ForeignKey('goals.id'))
@@ -122,25 +122,14 @@ class Entry(db.Model):
 @app.route('/')
 def home():
     if not session.get('logged_in'):
-      return render_template('index.html')
-    
+      return render_template('index.html')    
     both_text = db.text(
       "select max(entries.id) as max_entry_id, max(entries.created_at) as most_recent, "
       "goals.id as goal_id, goals.name, goals.type, goals.direction, goals.period, goals.verb, "
       "goals.subtitle, sum(coalesce(entries.total, 0)) as sum, count(distinct entries.id) as count, "
-      "goals.goal, goals.created_at from goals left join entries on (entries.name=goals.name and "
-      "date(entries.created_at) = date(CURRENT_TIMESTAMP)) where goals.period = 'daily' "
-      "group by goals.name, goals.id "
-      "UNION "
-      "select max(entries.id) as max_entry_id, max(entries.created_at) as most_recent, "
-      "goals.id as goal_id, goals.name, goals.type, goals.direction, goals.period, goals.verb, "
-      "goals.subtitle, sum(coalesce(entries.total, 0)) as sum, count(distinct entries.id) as count, "
-      "goals.goal, goals.created_at from goals left join entries on (entries.name=goals.name and "
-      "date(entries.created_at) = date(CURRENT_TIMESTAMP)) where goals.period='weekly' "
-      "group by goals.name, goals.id"
-    
-    )
-    
+      "goals.goal, goals.created_at from goals left join entries on (entries.name=goals.name) "
+      "group by goals.name, goals.id "    
+    )    
     goaltotals = db.engine.execute(both_text)
     return render_template('alhome.html', goaltotals=goaltotals)
 
@@ -154,13 +143,10 @@ def admin():
   "  kind of rather go through the work of building it myself to know that I'm doing 
   "  things in a way that will still feel good on a phone.
   """
-
   if not session.get('logged_in'):
       abort(401)
-
   entries = Entry.query.order_by(Entry.id).all()
   goals = Goal.query.order_by(Goal.id).all()
- 
   return render_template('aladmin.html', entries=entries, goals=goals, )
 
 @app.route('/numbers')
@@ -168,7 +154,6 @@ def numbers():
   """ 
   "  This is where I'll be working on improvement-over-time charts and visualizations.
   """
-
   if not session.get('logged_in'):
     abort(401)
   entries = Entry.query.all()
@@ -179,8 +164,7 @@ def numbers():
 def add_entry():
   if not session.get('logged_in'):
     abort(401)
-  form = request.form
-  
+  form = request.form  
   entry = Entry(form['name'], form['goal_id'], form['total'], form['notes'])
   db.session.add(entry)
   db.session.commit()
@@ -198,17 +182,12 @@ def remove_entry():
     abort(401)
   form = request.form
   if form['delete'] == 'delete' and form['areyousure']:
-    s = ''
+    s = list()
     app.logger.debug(form)
     for f in form:
       if f[:2] == 'id':
-        s = s + form[f] + ','
-    s = s[:-1]
-    # i don't know if this will work
-    app.logger.debug(s)
-    entrytarget = Entry.query.filter( Entry.id.in_((s)) ).all()
-    for t in entrytarget:
-      db.session.delete(t)
+        e = Entry.query.filter(Entry.id==form[f]).first()
+        db.session.delete(e)
     db.session.commit()
     flash('Successfully deleted those pesky entries')
     return redirect(url_for('admin'))
@@ -220,8 +199,7 @@ def remove_entry():
 def add_goal():
   if not session.get('logged_in'):
     abort(401)
-  form = request.form
-    
+  form = request.form    
   goal = Goal(form['name'], form['goal'], form['type'], 
     form['direction'], form['period'], form['verb'], form['subtitle'])
   db.session.add(goal)
@@ -232,14 +210,12 @@ def add_goal():
     
 @app.route('/removegoal', methods=['POST'])
 def remove_goal():
-  """ Provides a way to remove or delete goals """
-  
+  """ Provides a way to remove or delete goals """  
   if not session.get('logged_in'):
     abort(401)
   form = request.form
   if form['delete'] == 'delete' and form['areyousure']:
-    s = form['id_name'].split(',')
-    
+    s = form['id_name'].split(',')    
     target = Goal.query.filter( Goal.id == s[0] , Goal.name == s[1] ).first_or_404()
     """ @@TODO: set up cascading deletes to get the entries too """
     db.session.delete(target)
