@@ -20,20 +20,20 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/eightglasses'
 db = SQLAlchemy(app)
 
 
-class User(db.Model):
-  """ The User model... not currently in use """
-  
-  __tablename__ = 'users'
-  id = db.Column(db.Integer, primary_key=True)
-  username = db.Column(db.String(80), unique=True)
-  email = db.Column(db.String(120), unique=True)
-  
-  def __init__(self, username, email):
-    self.username = username
-    self.email = email
-
-  def __repr__(self):
-    return '<User %r>' % self.username
+#class User(db.Model):
+#  """ The User model... not currently in use """
+#  
+#  __tablename__ = 'users'
+#  id = db.Column(db.Integer, primary_key=True)
+#  username = db.Column(db.String(80), unique=True)
+#  email = db.Column(db.String(120), unique=True)
+#  
+#  def __init__(self, username, email):
+#    self.username = username
+#    self.email = email
+#
+#  def __repr__(self):
+#    return '<User %r>' % self.username
 
 class Goal(db.Model):
 
@@ -46,6 +46,8 @@ class Goal(db.Model):
   created_at = db.Column(db.DateTime)
   user_id = db.Column(db.Integer, db.ForeignKey('users.id')) 
   name = db.Column(db.String(20), nullable=True)
+
+  # how many?
   goal = db.Column(db.Float, nullable=False)
 
   # increment, count, or float. 
@@ -120,8 +122,6 @@ def home():
     
     )
     
-
-    #goaltotals = dailytotals + weeklytotals
     goaltotals = db.engine.execute(both_text)
     return render_template('alhome.html', goaltotals=goaltotals)
 
