@@ -167,6 +167,16 @@ def numbers():
   entries = Entry.query.all()
   return render_template('numbers.html', entries=entries, )
 
+@app.route('/create_all', methods=['POST'])
+def add_entry():
+  if not session.get('logged_in'):
+    abort(401)
+
+  db.create_all()
+
+  flash('Set up the whole database')
+  return redirect(url_for('home'))
+
 
 @app.route('/addentry', methods=['POST'])
 def add_entry():
