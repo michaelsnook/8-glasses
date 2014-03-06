@@ -167,7 +167,7 @@ def numbers():
   entries = Entry.query.all()
   return render_template('numbers.html', entries=entries, )
 
-@app.route('/create_all', methods=['POST'])
+@app.route('/create_all', methods=['GET', 'POST'])
 def create_all():
   if not session.get('logged_in'):
     abort(401)
