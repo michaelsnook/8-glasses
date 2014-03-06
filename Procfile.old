@@ -1,1 +1,0 @@
-web: gunicorn eightglasses:app -p 5000

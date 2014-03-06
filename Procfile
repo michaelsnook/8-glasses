@@ -1,1 +1,1 @@
-web: gunicorn egalchemy:app -p 5000
+web: gunicorn eightglasses:app -p 5000
