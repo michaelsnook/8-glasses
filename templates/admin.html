@@ -1,7 +1,107 @@
 {% extends "layout.html" %}
 {% block body %}
 
-{% include 'debug.html' %}
+{% if not goals %}
+ <p><em> there are no goals </em></p>
+{% endif %}
+{% if not entries %}
+ <p><em> there are no entries </em></p>
+{% endif %}
+
+{% if goals %}
+<form action="{{ url_for('remove_goal') }}" method="POST" class="remove-goal-type">
+<table>
+	<thead>
+		<tr>
+			<th>name</th>
+			<th>type</th>
+			<th>direction</th>
+			<th>period</th>
+			<th>verb</th>
+			<th>subtitle</th>
+			<th>created_at</th>
+			{#<th>sum</th>
+			<th>count</th>#}
+			<th>goal</th>
+			{# <th>most_recent</th> #}
+			<th><input type="checkbox" checked disabled/></th>
+		</tr>
+	</thead>
+	<tbody>
+	{% for goal in goals %}
+		<tr>
+			<td>{{ goal.name }}</td>
+			<td>{{ goal.type }}</td>
+			<td>{{ goal.direction }}</td>
+			<td>{{ goal.period }}</td>
+			<td>{{ goal.verb }}</td>
+			<td>{{ goal.subtitle }}</td>
+			<td>{{ goal.created_at }}</td>		
+
+    {#- 
+      @@TODO: would this work? 
+			<td>{{ goal.entries.sum(Entry.total) }}</td>
+    #}
+      
+    {#-
+      @@TODO: make backref so this works
+			<td>{{ goal.entries.count() }}</td>
+		#}
+		
+			<td>{{ goal.goal }}</td>
+		{#	
+		  @@TODO: would this work?	
+			<td>{{ goal.entries.max(Entry.created_at) }}</td>	
+		#}	
+			<td><input type="radio" name="id_name" value="{{ goal.id }},{{ goal.name }}" />
+		</tr>
+	{% endfor %}
+	</tbody>
+	<input type="checkbox" name="areyousure" value="true" unchecked />
+	<input type="submit" name="delete" value="delete" class="button round " />
+</table>
+</form>
+{% endif %}
+
+<div class="row">
+{% if entries %}
+<div class="large-5 columns">
+<form action="{{ url_for('remove_entry') }}" method="POST" class="remove-entry">
+<table>
+
+	<thead>
+		<tr>
+			<th>thing</th>
+			<th>number</th>
+			<th>created_at</th>		
+			{#<th>notes</th>#}
+			<th><input type="checkbox" checked disabled/></th>		
+		</tr>
+	</thead>
+	<tbody>
+	{% for entry in entries %}
+		<label for="id-{{ entry.id }}">
+		<!--tr onclick="$(this).find('input').click();"-->
+		<tr>
+			<td>{{ entry.name }}</td>
+			<td>{{ entry.total }}</td>
+			<td>{{ entry.created_at }}</td>	
+			{#<td>{{ entry.notes|safe }}</td>#}
+			<td><input type="checkbox" id="id-{{ entry.id }}" name="id-{{ entry.id }}" value="{{ entry.id }}" /></td>
+		</tr></label>
+		
+	{% endfor %}
+	</tbody>
+	<input type="checkbox" name="areyousure" value="true" unchecked />
+	<input type="submit" name="delete" value="delete" class="button round " />
+</table>
+</form>
+{% endif %}
+
+</div>
+
+
+
   	<div class="large-6 columns">  
   {% include 'addgoal_form.html' %}
 		</div>

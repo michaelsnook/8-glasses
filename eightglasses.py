@@ -2,7 +2,7 @@ from datetime import datetime
 import os, string
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
 from flask.ext.sqlalchemy import SQLAlchemy
-
+from settings import DB_URI
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -16,12 +16,7 @@ app.config.update(dict(
 ))
 app.config.from_envvar('EIGHTGLASSES_SETTINGS', silent=True)
 
-
-# use local databaw
-#  app.config['SQLALCHEMY_DATABASE_URI'] = SETTINGS['postgresql://localhost/eightglasses']  
-
-# use heroku database_url
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
 
 db = SQLAlchemy(app)
 
@@ -127,25 +122,25 @@ class Entry(db.Model):
 
 @app.route('/')
 def home():
-    if not session.get('logged_in'):
-      return render_template('index.html')    
-    both_text = db.text(
-      "select max(entries.id) as max_entry_id, max(entries.created_at) as most_recent, "
-      "goals.id as goal_id, goals.name, goals.type, goals.direction, goals.period, goals.verb, "
-      "goals.subtitle, sum(coalesce(entries.total, 0)) as sum, count(distinct entries.id) as count, "
-      "goals.goal, goals.created_at from goals left join entries on (entries.name=goals.name) "
-      "where goals.type='daily' "
-      "group by goals.name, goals.id "    
-      "UNION "
-      "select max(entries.id) as max_entry_id, max(entries.created_at) as most_recent, "
-      "goals.id as goal_id, goals.name, goals.type, goals.direction, goals.period, goals.verb, "
-      "goals.subtitle, sum(coalesce(entries.total, 0)) as sum, count(distinct entries.id) as count, "
-      "goals.goal, goals.created_at from goals left join entries on (entries.name=goals.name) "
-      "where goals.type='weekly' "
-      "group by goals.name, goals.id "    
-    )    
-    goaltotals = db.engine.execute(both_text)
-    return render_template('alhome.html', goaltotals=goaltotals)
+  if not session.get('logged_in'):
+    return render_template('index.html')    
+  both_text = db.text(
+    "select max(entries.id) as max_entry_id, max(entries.created_at) as most_recent, "
+    "goals.id as goal_id, goals.name, goals.type, goals.direction, goals.period, goals.verb, "
+    "goals.subtitle, sum(coalesce(entries.total, 0)) as sum, count(distinct entries.id) as count, "
+    "goals.goal, goals.created_at from goals left join entries on (entries.name=goals.name) "
+    "where goals.type='daily' "
+    "group by goals.name, goals.id "    
+    "UNION "
+    "select max(entries.id) as max_entry_id, max(entries.created_at) as most_recent, "
+    "goals.id as goal_id, goals.name, goals.type, goals.direction, goals.period, goals.verb, "
+    "goals.subtitle, sum(coalesce(entries.total, 0)) as sum, count(distinct entries.id) as count, "
+    "goals.goal, goals.created_at from goals left join entries on (entries.name=goals.name) "
+    "where goals.type='weekly' "
+    "group by goals.name, goals.id "    
+  )    
+  goaltotals = db.engine.execute(both_text)
+  return render_template('home.html', goaltotals=goaltotals)
 
     
 @app.route('/admin')
@@ -161,28 +156,19 @@ def admin():
       abort(401)
   entries = Entry.query.order_by(Entry.id).all()
   goals = Goal.query.order_by(Goal.id).all()
-  return render_template('aladmin.html', entries=entries, goals=goals, )
+  return render_template('admin.html', entries=entries, goals=goals, )
 
 @app.route('/numbers')
 def numbers():
   """ 
-  "  This is where I'll be working on improvement-over-time charts and visualizations.
+  " WIP
+  "  
+  " This is where I'll be working on improvement-over-time charts and visualizations.
   """
   if not session.get('logged_in'):
     abort(401)
   entries = Entry.query.all()
   return render_template('numbers.html', entries=entries, )
-
-@app.route('/create_all', methods=['GET', 'POST'])
-def create_all():
-  if not session.get('logged_in'):
-    abort(401)
-
-  db.create_all()
-
-  flash('Set up the whole database')
-  return redirect(url_for('home'))
-
 
 @app.route('/addentry', methods=['POST'])
 def add_entry():
@@ -229,7 +215,7 @@ def add_goal():
   db.session.add(goal)
   db.session.commit()
   flash('Your new goal was successfully added!')
-  return redirect(url_for('admin'))   
+  return redirect(url_for('home'))   
 
     
 @app.route('/removegoal', methods=['POST'])
@@ -242,10 +228,14 @@ def remove_goal():
     s = form['id_name'].split(',')    
     target = Goal.query.filter( Goal.id == s[0] , Goal.name == s[1] ).first_or_404()
     """ @@TODO: set up cascading deletes to get the entries too """
-    db.session.delete(target)
-    db.session.commit()
-    flash('Your goal was successfully deleted :(')
-    return redirect(url_for('admin'))
+    try:
+      db.session.delete(target)
+      db.session.commit()
+      flash('Your goal was successfully deleted :(')
+      return redirect(url_for('admin'))
+    except:
+      flash('Your goal could not be deleted. better keep at it.')
+      return redirect(url_for('admin'))
   else:
     flash('Something went wrong with the form and your goal was not removed')
     return redirect(url_for('admin'))
