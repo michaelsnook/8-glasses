@@ -5,5 +5,5 @@
 *.db
 ve
 venv
-#settings.py
+settings.py
 *~
