@@ -16,10 +16,12 @@ app.config.update(dict(
 ))
 app.config.from_envvar('EIGHTGLASSES_SETTINGS', silent=True)
 
-if SETTINGS:
-  app.config['SQLALCHEMY_DATABASE_URI'] = SETTINGS['db_local']  
-else: 
-  app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+
+# use local databaw
+#  app.config['SQLALCHEMY_DATABASE_URI'] = SETTINGS['postgresql://localhost/eightglasses']  
+
+# use heroku database_url
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 
 db = SQLAlchemy(app)
 
