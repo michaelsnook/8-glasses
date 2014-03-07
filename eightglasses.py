@@ -140,7 +140,9 @@ def home():
     "group by goals.name, goals.id "    
   )    
   goaltotals = db.engine.execute(both_text)
-  return render_template('home.html', goaltotals=goaltotals)
+  entries = Entry.query.order_by(Entry.id).all()
+  goals = Goal.query.order_by(Goal.id).all()
+  return render_template('home.html', goaltotals=goaltotals, totlas=goaltotals, entries=entries, goals=goals)
 
     
 @app.route('/admin')

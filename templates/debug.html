@@ -1,9 +1,38 @@
+{% if not goals %}
+ <p><em> there are no goals </em></p>
+{% endif %}
+
 {% if not totals %}
- <p><em> there are no totals </em></p>
+ <p><em> there are no goal totals </em></p>
 {% endif %}
 {% if not entries %}
  <p><em> there are no entries </em></p>
 {% endif %}
+
+{% if goals %}
+<table>
+  <thead>
+    <tr>
+      <th>verb</th>
+      <th>goal</th>
+      <th>name</th>      
+    </tr>
+  </thead>
+  <tbody>
+    {% for goal in goals %}
+    <tr>
+      <td>{{ goal.verb }}</td>
+      <td>{{ goal.goal }}</td>
+      <td>{{ goal.name }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>            
+</table>
+
+{% endif %}
+
+
+
 
 {% if totals %}
 <table>
@@ -85,4 +114,3 @@
 {% endif %}
 
 </div>
-
