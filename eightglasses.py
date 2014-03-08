@@ -24,10 +24,11 @@ if hasattr(os.environ, 'DATABASE_URL'):
 # for local database. change this in production
 else:
   app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/eightglasses'
+"""
 
 # now that we've config'd our app... get the db object
 db = SQLAlchemy(app)
-"""
+
 
 #class User(db.Model):
 #  """ The User model... not currently in use """
