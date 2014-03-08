@@ -2,7 +2,7 @@ from datetime import datetime
 import os, string
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
 from flask.ext.sqlalchemy import SQLAlchemy
-from settings import DB_URI
+
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -16,8 +16,16 @@ app.config.update(dict(
 ))
 app.config.from_envvar('EIGHTGLASSES_SETTINGS', silent=True)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
+# for local database. change this in production
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/eightglasses'
 
+# on heroku you have a database_url on os.environ
+if hasattr(os.environ, 'DATABASE_URL'):
+  app.config.update(dict(
+    SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL'], 
+  ))
+
+# now that we've config'd our app... get the db object
 db = SQLAlchemy(app)
 
 
