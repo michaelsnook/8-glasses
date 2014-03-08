@@ -16,6 +16,8 @@ app.config.update(dict(
 ))
 app.config.from_envvar('EIGHTGLASSES_SETTINGS', silent=True)
 
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+"""
 # on heroku you have a database_url on os.environ
 if hasattr(os.environ, 'DATABASE_URL'):
   app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
@@ -25,7 +27,7 @@ else:
 
 # now that we've config'd our app... get the db object
 db = SQLAlchemy(app)
-
+"""
 
 #class User(db.Model):
 #  """ The User model... not currently in use """
