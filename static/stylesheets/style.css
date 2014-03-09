@@ -23,3 +23,4 @@ p.aside { margin-bottom: 0; }
 .tablet-preview { width: 440px; padding: 32px; position: relative; top: -280px; z-index: -1;}
 a:hover, button:hover, input:hover[type=submit] { text-decoration: underline; }
 a:hover.brand, a:hover.button.marginless, button:hover.marginless { text-decoration: none; }
+a.button.right+a.button.right { margin-right: 20px; }
