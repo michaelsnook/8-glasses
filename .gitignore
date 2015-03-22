@@ -4,6 +4,6 @@
 *.pyc
 *.db
 ve
-venv
 settings.py
+_site
 *~
