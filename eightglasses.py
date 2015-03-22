@@ -1,4 +1,4 @@
-from datetime import datetime 
+from datetime import datetime
 import os, string
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -16,17 +16,17 @@ app.config.update(dict(
 ))
 app.config.from_envvar('EIGHTGLASSES_SETTINGS', silent=True)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+#app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/eightglasses'
 
-"""
+#"""
 # on heroku you have a database_url on os.environ
 if hasattr(os.environ, 'DATABASE_URL'):
   app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 # for local database. change this in production
 else:
   app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/eightglasses'
-"""
+#"""
 
 # now that we've config'd our app... get the db object
 db = SQLAlchemy(app)
@@ -34,12 +34,12 @@ db = SQLAlchemy(app)
 
 #class User(db.Model):
 #  """ The User model... not currently in use """
-#  
+#
 #  __tablename__ = 'users'
 #  id = db.Column(db.Integer, primary_key=True)
 #  username = db.Column(db.String(80), unique=True)
 #  email = db.Column(db.String(120), unique=True)
-#  
+#
 #  def __init__(self, username, email):
 #    self.username = username
 #    self.email = email
@@ -49,18 +49,18 @@ db = SQLAlchemy(app)
 
 class Goal(db.Model):
 
-  """ Users typically have a handful of goals each. Each goal has a numeric 
+  """ Users typically have a handful of goals each. Each goal has a numeric
   success measure and a time interval which are used to give feedback to the
   user on whether they are meeting their goals. """
-  
+
   __tablename__ = 'goals'
   id = db.Column(db.Integer, primary_key=True)
-  
+
   # set automatically
   created_at = db.Column(db.DateTime, default="current_timestamp")
 
   # not currently in use
-  #user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True) 
+  #user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
 
   # the most important text field!
   name = db.Column(db.String(20), nullable=True)
@@ -68,22 +68,22 @@ class Goal(db.Model):
   # how many?
   goal = db.Column(db.Float, nullable=False)
 
-  # increment, count, or float. 
+  # increment, count, or float.
   type = db.Column(db.String(20), default='increment')
 
   # options are positive or negative, meaning things you want to do less of
   direction = db.Column(db.String(20), default='positive')
-  
+
   # right now only daily and weekly goals are supported
   period = db.Column(db.String(20), default='daily')
-  
+
   # optional. just for fun. DRINK eight glasses. DO sixty situps.
   verb = db.Column(db.String(20), nullable=True)
-  
+
   # meh
   subtitle = db.Column(db.String(40), nullable=True)
 
-  def __init__(self, name, goal, type='increment', direction='positive', 
+  def __init__(self, name, goal, type='increment', direction='positive',
                             period='daily', verb=None, subtitle=None):
     self.created_at = datetime.utcnow()
     self.name = name
@@ -104,20 +104,20 @@ class Entry(db.Model):
 
   # set automatically
   created_at = db.Column(db.DateTime, default="current_timestamp")
-  
+
   # not in use
   #user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
-  
-  # the foreign key 
+
+  # the foreign key
   goal_id = db.Column(db.Integer, db.ForeignKey('goals.id'))
   #@@TODO add a backref
-  
+
   # the main text label
   name = db.Column(db.String(20), nullable=False)
 
   # how many of the thing are we logging with this action?
   total = db.Column(db.Float, default=1)
-  
+
   # unused
   notes = db.Column(db.String(120), nullable=True)
 
@@ -134,7 +134,7 @@ class Entry(db.Model):
 @app.route('/')
 def home():
   if not session.get('logged_in'):
-    return render_template('index.html')    
+    return render_template('index.html')
   both_text = db.text(
     "select max(entries.id) as max_entry_id, max(entries.created_at) as most_recent, "
     "goals.id as goal_id, goals.name, goals.type, goals.direction, goals.period, goals.verb, "
@@ -149,20 +149,20 @@ def home():
     "goals.goal, goals.created_at from goals left join entries on (entries.name=goals.name) "
     "where goals.period='weekly' "
     "group by goals.name, goals.id"
-  )    
+  )
   goaltotals = db.engine.execute(both_text)
   entries = Entry.query.order_by(Entry.id).all()
   goals = Goal.query.order_by(Goal.id).all()
   return render_template('home.html', goaltotals=goaltotals, totlas=goaltotals, entries=entries, goals=goals)
 
-    
+
 @app.route('/admin')
 def admin():
-  """ 
-  "  Provides an easy interface for viewing all entries and deleting entries if needed. 
-  "  It's not a substitute for a real admin, and I notice that flask does have an Admin 
+  """
+  "  Provides an easy interface for viewing all entries and deleting entries if needed.
+  "  It's not a substitute for a real admin, and I notice that flask does have an Admin
   "  tool I could check out. But I'm not sure if users really need a full admin, and I'd
-  "  kind of rather go through the work of building it myself to know that I'm doing 
+  "  kind of rather go through the work of building it myself to know that I'm doing
   "  things in a way that will still feel good on a phone.
   """
   if not session.get('logged_in'):
@@ -173,9 +173,9 @@ def admin():
 
 @app.route('/numbers')
 def numbers():
-  """ 
+  """
   " WIP
-  "  
+  "
   " This is where I'll be working on improvement-over-time charts and visualizations.
   """
   if not session.get('logged_in'):
@@ -187,7 +187,7 @@ def numbers():
 def add_entry():
   if not session.get('logged_in'):
     abort(401)
-  form = request.form  
+  form = request.form
   entry = Entry(form['name'], form['goal_id'], form['total'], form['notes'])
   db.session.add(entry)
   db.session.commit()
@@ -222,23 +222,23 @@ def remove_entry():
 def add_goal():
   if not session.get('logged_in'):
     abort(401)
-  form = request.form    
-  goal = Goal(form['name'], form['goal'], form['type'], 
+  form = request.form
+  goal = Goal(form['name'], form['goal'], form['type'],
     form['direction'], form['period'], form['verb'], form['subtitle'])
   db.session.add(goal)
   db.session.commit()
   flash('Your new goal was successfully added!')
-  return redirect(url_for('home'))   
+  return redirect(url_for('home'))
 
-    
+
 @app.route('/removegoal', methods=['POST'])
 def remove_goal():
-  """ Provides a way to remove or delete goals """  
+  """ Provides a way to remove or delete goals """
   if not session.get('logged_in'):
     abort(401)
   form = request.form
   if form['delete'] == 'delete' and form['areyousure']:
-    s = form['id_name'].split(',')    
+    s = form['id_name'].split(',')
     target = Goal.query.filter( Goal.id == s[0] , Goal.name == s[1] ).first_or_404()
     """ @@TODO: set up cascading deletes to get the entries too """
     try:
