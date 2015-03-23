@@ -87,7 +87,10 @@
 			<td>{{ entry.total }}</td>
 			<td>{{ entry.created_at }}</td>	
 			{#<td>{{ entry.notes|safe }}</td>#}
-			<td><input type="checkbox" id="id-{{ entry.id }}" name="id-{{ entry.id }}" value="{{ entry.id }}" /></td>
+			<td>
+				<i class="foundicon-remove"></i>
+				<input type="checkbox" id="id-{{ entry.id }}" name="id-{{ entry.id }}" value="{{ entry.id }}" />
+			</td>
 		</tr></label>
 		
 	{% endfor %}
