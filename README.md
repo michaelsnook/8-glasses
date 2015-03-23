@@ -6,9 +6,8 @@ to learn Python for the web.
 
 It should be pretty easy to install on your own machine, if you like. Make a
 PostgresSQL database with `createdb eightglasses`; clone the repository;
-activate a virtual environment; `pip install -r requirements.txt`; `python
-eightglasses.py`. There's also a Procfile for Heroku or, if you have it
-installed, `foreman start` will also run the application via Gunicorn.
+set up a virtual environment and activate it; run `pip install -r requirements.txt`; then launch with `python
+runserver.py`. There's also a Procfile for Heroku, so if you have it, you can use `foreman start` to run the application via Gunicorn.
 
 You can check out the most recent deployed public app at
 http://eightglasses.herokuapp.com/. The daily and weekly queries don't work yet,
